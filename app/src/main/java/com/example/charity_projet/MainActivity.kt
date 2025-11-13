@@ -3,6 +3,8 @@ package com.example.charity_projet
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
@@ -27,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvEmpty: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var btnRefresh: Button
-    private lateinit var btnVoirAcceptees: Button // ✅ bouton ajouté ici
+    private lateinit var btnVoirAcceptees: Button
 
     private lateinit var demandeAdapter: DemandeAdapter
     private val apiService = RetrofitClient.apiService
@@ -41,16 +43,41 @@ class MainActivity : AppCompatActivity() {
         tvEmpty = findViewById(R.id.tvEmpty)
         progressBar = findViewById(R.id.progressBar)
         btnRefresh = findViewById(R.id.btnRefresh)
-        btnVoirAcceptees = findViewById(R.id.btnVoirAcceptees) // ✅ ajouté
+        btnVoirAcceptees = findViewById(R.id.btnVoirAcceptees)
 
         setupRecyclerView()
         setupClickListeners()
         loadDemandes()
     }
 
+    // ✅ 1. Créer le menu dans la barre d'action
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    // ✅ 2. Gérer les clics sur le menu
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_demandes_attente -> {
+                // On est déjà sur les demandes en attente, on recharge
+                loadDemandes()
+                Toast.makeText(this, "Demandes en attente actualisées", Toast.LENGTH_SHORT).show()
+                true
+            }
+            R.id.action_demandes_acceptees -> {
+                // Naviguer vers les demandes acceptées
+                val intent = Intent(this, DemandesAccepteesActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun setupRecyclerView() {
         demandeAdapter = DemandeAdapter(emptyList()) { demande, action ->
-            showConfirmationDialog(demande, action) // Utiliser la confirmation
+            showConfirmationDialog(demande, action)
         }
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
@@ -159,6 +186,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
     private fun showConfirmationDialog(demande: Demande, action: String) {
         val message = if (action == "refuser") {
             "Êtes-vous sûr de vouloir refuser et supprimer définitivement cette demande ? Cette action est irréversible."
@@ -175,6 +203,7 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("Annuler", null)
             .show()
     }
+
     private fun showDemandes(demandes: List<Demande>) {
         demandeAdapter.updateData(demandes)
         if (demandes.isEmpty()) {
