@@ -38,7 +38,13 @@ data class Demande(
     val user: User? = null,
 
     @SerializedName("dateCreation")
-    val dateCreation: String? = null
+    val dateCreation: String? = null,
+
+    @SerializedName("likes")
+    var likes: Int = 0,                        // var pour pouvoir modifier
+
+    @SerializedName("comments")
+    var comments: List<Commentaire> = emptyList() // var + initialisé pour modification
 ) {
     // Getter unique pour récupérer l'ID
     fun getId(): String? = idServer ?: idAlt
@@ -60,4 +66,27 @@ data class NotificationResponse(
 
     @SerializedName("destinataire")
     val destinataire: String? = null
+)
+
+// Modèle Commentaire
+data class Commentaire(
+    @SerializedName("id")
+    val id: String? = null,
+
+    @SerializedName("contenu")
+    val contenu: String? = null,
+
+    @SerializedName("dateCreation")
+    val dateCreation: String? = null,
+
+    @SerializedName("user")
+    val user: User? = null,
+
+    @SerializedName("demande")
+    val demande: Demande? = null
+)
+
+// Modèle pour envoyer un commentaire
+data class CommentRequest(
+    val contenu: String
 )

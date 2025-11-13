@@ -71,7 +71,7 @@ class DemandesAccepteesActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        demandeAdapter = DemandeAccepteeAdapter(emptyList())
+        demandeAdapter = DemandeAccepteeAdapter(emptyList(),this)
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@DemandesAccepteesActivity)
             adapter = demandeAdapter
